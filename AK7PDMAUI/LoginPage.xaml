@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AK7PDMAUI.LoginPage"
+             Title="Přihlášení do aplikace">
+    <VerticalStackLayout WidthRequest="300"
+                         HeightRequest="300"
+                         Spacing="30">
+        <VerticalStackLayout Spacing="20"
+                             HorizontalOptions="CenterAndExpand"
+                             WidthRequest="200">
+            <Entry x:Name="EmailLabel"
+                   Placeholder="Email..."
+                   Text="{Binding Username}"></Entry>
+            <Entry x:Name="PasswordLabel1"
+                   Placeholder="Heslo..."
+                   IsPassword="true"
+                   Text="{Binding Password1}"></Entry>
+            <Entry x:Name="PasswordLabel2"
+                   Placeholder="Heslo znovu..."
+                   IsPassword="true"
+                   IsVisible="{Binding RegistrationControlsVisible}"
+                   Text="{Binding Password2}"></Entry>
+        </VerticalStackLayout>
+        <Label x:Name="HintLabel"
+               Text="{Binding Hint}"
+               VerticalOptions="Center"
+               HorizontalOptions="Center"
+               TextDecorations="Underline"
+               TextColor="LightBlue">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="NewAccountLabel_Tapped"
+                                      Command="{Binding ChangeHintLabelCommand}"></TapGestureRecognizer>
+            </Label.GestureRecognizers>
+        </Label>
+        <Button x:Name="LoginButton"
+                Text="Přihlásit"
+                WidthRequest="200"
+                Clicked="LoginButton_Clicked"
+                Command="{Binding LoginCommand}"
+                IsVisible="{Binding LoginControlsVisible}"></Button>
+        <Button x:Name="RegisterButton"
+                Text="Registrovat"
+                WidthRequest="200"
+                Clicked="RegisterButton_Clicked"
+                Command="{Binding RegisterCommand}"
+                IsVisible="{Binding RegistrationControlsVisible}"></Button>
+        <ActivityIndicator x:Name="ActivityIndicator"
+                           IsRunning="{Binding IsBusy}"></ActivityIndicator>
+    </VerticalStackLayout>
+</ContentPage>

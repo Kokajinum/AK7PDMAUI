@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:AK7PDMAUI.Models"
+             x:Class="AK7PDMAUI.MainPage"
+             Title="Přehled">
+    <Grid>
+        <ScrollView HeightRequest="600"
+                    VerticalOptions="StartAndExpand"
+                    IsVisible="{Binding Repository.IsNotAdmin}">
+            <CollectionView x:Name="_CV"
+                            ItemsSource="{Binding BorrowedBooks}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
+                                     Span="5"
+                                     VerticalItemSpacing="30"></GridItemsLayout>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Book">
+                        <VerticalStackLayout Spacing="0"
+                                             Padding="0"
+                                             Margin="0"
+                                             WidthRequest="200">
+                            <Image Source="{Binding ImgUrl}"
+                                   Margin="0"
+                                   Aspect="AspectFill"
+                                   HeightRequest="300"></Image>
+                            <Border Padding="10"
+                                    Stroke="{AppThemeBinding Dark=White,Light=Black}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle BackgroundColor="Yellow"
+                                                    CornerRadius="0,0,20,20"></RoundRectangle>
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="0"
+                                                     Padding="0">
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Autor: "></Span>
+                                                <Span Text="{Binding Author.FirstName}"
+                                                      TextColor="#91E5F6"></Span>
+                                                <Span Text=" "></Span>
+                                                <Span Text="{Binding Author.LastName}"
+                                                      TextColor="#91E5F6"></Span>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Název: "></Span>
+                                                <Span Text="{Binding Title}"
+                                                      TextColor="#91E5F6"></Span>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Rok vydání: "></Span>
+                                                <Span Text="{Binding Year}"
+                                                      TextColor="#91E5F6"></Span>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Počet stran: "></Span>
+                                                <Span Text="{Binding Pages}"
+                                                      TextColor="#91E5F6"></Span>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+        <ActivityIndicator IsRunning="{Binding IsBusy}"></ActivityIndicator>
+    </Grid>
+</ContentPage>
