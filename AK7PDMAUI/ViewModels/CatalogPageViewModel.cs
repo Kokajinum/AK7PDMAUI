@@ -38,6 +38,34 @@ namespace AK7PDMAUI.ViewModels
             ShowCreateBookCommand = new Command(async () => await ShowCreateBook());
             BorrowBookCommand = new Command<Book>(async (book) => await BorrowBook(book));
             DeleteBookCommand = new Command<Book>(async (book) => await DeleteBook(book));
+            ShowEditBookCommand = new Command<Book>(async (book) => await ShowEditBook(book));
+            PerformSearchCommand = new Command<string>(async (searchText) => await PerformSearch(searchText));
+        }
+
+        private async Task PerformSearch(string searchText)
+        {
+            try
+            {
+                Books = new(await Repository.SearchBooks(searchText));
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private async Task ShowEditBook(Book book)
+        {
+            try
+            {
+                Repository.SelectedBook = book;
+                await Shell.Current.GoToAsync("/EditBookPage");
+
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         private async Task DeleteBook(Book book)
@@ -73,8 +101,8 @@ namespace AK7PDMAUI.ViewModels
             {
                 IsBusy = true;
                 if (Repository.UserBooks.Find
-                    (x => x.BookId == book.Id.ToString() && 
-                    x.UserId == Repository.LoggedUser.Id.ToString()) != null)
+                    (x => x.BookId == book.Id &&
+                    x.UserId == Repository.LoggedUser.Id) != null)
                 {
                     await Shell.Current.DisplayAlert
                         (AppResources.Error, "Knihu již máte vypůjčenou!", AppResources.OK);
@@ -89,7 +117,7 @@ namespace AK7PDMAUI.ViewModels
                 if (freshBook.TotalCount > 0)
                 {
                     freshBook.BorrowedCount += 1;
-                    await Repository.UpdateBookBorrowCountAsync(freshBook);
+                    //await Repository.UpdateBookBorrowCountAsync(freshBook);
                     await Repository.CreateUserBookAsync(freshBook);
                     await Shell.Current.DisplayAlert("Oznámení", "Přidání knihy proběhlo v pořádku.", AppResources.OK);
                 }
@@ -98,7 +126,7 @@ namespace AK7PDMAUI.ViewModels
                     await Shell.Current.DisplayAlert
                         (AppResources.Error, "Bylo dosaženo maximálního počtu vypůjčených licencí.", AppResources.OK);
                 }
-                
+
             }
             catch (Exception)
             {
@@ -143,5 +171,7 @@ namespace AK7PDMAUI.ViewModels
         public ICommand ShowCreateBookCommand { get; set; }
         public ICommand BorrowBookCommand { get; set; }
         public ICommand DeleteBookCommand { get; set; }
+        public ICommand ShowEditBookCommand { get; set; }
+        public ICommand PerformSearchCommand { get; set; }
     }
 }

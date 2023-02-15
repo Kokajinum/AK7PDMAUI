@@ -72,6 +72,10 @@
                                             </FormattedString>
                                         </Label.FormattedText>
                                     </Label>
+                                    <Button Text="Vrátit knihu"
+                                            Margin="0,10,0,0"
+                                            Command="{Binding Path=BindingContext.ReturnBookCommand,Source={Reference _CV}}"
+                                            CommandParameter="{Binding .}"></Button>
                                 </VerticalStackLayout>
                             </Border>
                         </VerticalStackLayout>

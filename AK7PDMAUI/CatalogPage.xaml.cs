@@ -7,28 +7,28 @@ namespace AK7PDMAUI;
 public partial class CatalogPage : ContentPage
 {
 
-	public CatalogPageViewModel Vm { get; set; }
+    public CatalogPageViewModel Vm { get; set; }
 
-	public CatalogPage(CatalogPageViewModel vm)
-	{
+    public CatalogPage(CatalogPageViewModel vm)
+    {
         BindingContext = vm;
         Vm = vm;
         InitializeComponent();
-		
-		
-	}
+
+
+    }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-		try
-		{
-			Vm.RefreshBooksCommand.Execute(null);
-		}
-		catch (Exception ex)
-		{
+        try
+        {
+            Vm.RefreshBooksCommand.Execute(null);
+        }
+        catch (Exception ex)
+        {
 
-		}
+        }
     }
 
     private void Button_Clicked(object sender, EventArgs e)
@@ -38,5 +38,17 @@ public partial class CatalogPage : ContentPage
         {
             VisualStateManager.GoToState(b, "Normal");
         });
+    }
+
+    private void _SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.NewTextValue))
+        {
+            Vm.RefreshBooksCommand.Execute(null);
+        }
+        else if (e.NewTextValue.Length >= 4) 
+        {
+            Vm.PerformSearchCommand.Execute(e.NewTextValue);
+        }
     }
 }

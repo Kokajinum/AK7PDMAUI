@@ -20,6 +20,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<MainPage>();
 		builder.Services.AddSingleton<CatalogPage>();
 		builder.Services.AddSingleton<CreateBookPage>();
+		builder.Services.AddSingleton<EditBookPage>();
 
 		builder.Services.AddSingleton<RepositoryService>();
 
@@ -27,6 +28,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<LoginPageViewModel>();
 		builder.Services.AddSingleton<CreateBookPageViewModel>();
 		builder.Services.AddSingleton<MainPageViewModel>();
+		builder.Services.AddSingleton<EditBookPageViewModel>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

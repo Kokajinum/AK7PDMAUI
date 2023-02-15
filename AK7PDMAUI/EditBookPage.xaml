@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AK7PDMAUI.EditBookPage"
+             xmlns:convs="clr-namespace:AK7PDMAUI.Converters"
+             Title="Úprava knihy">
+    <ContentPage.Resources>
+        <convs:IntToStringConverter x:Key="intToString"></convs:IntToStringConverter>
+    </ContentPage.Resources>
+    <VerticalStackLayout>
+        <Grid ColumnDefinitions="*, *"
+              RowDefinitions="*,*,*,*,*,*,*,*"
+              VerticalOptions="Start"
+              Margin="0,30,0,0"
+              Padding="300,100,300,0">
+            <Label Text="Název knihy"
+                   Padding="15"></Label>
+            <Label Text="Rok vydání"
+                   Grid.Column="1"
+                   Padding="15"></Label>
+            <Entry Placeholder="Název knihy..."
+                   Text="{Binding BookTitle}"
+                   IsSpellCheckEnabled="False"
+                   Grid.Row="1"></Entry>
+            <Entry Placeholder="Rok vydání..."
+                   Grid.Column="1"
+                   Grid.Row="1"
+                   Keyboard="Numeric"
+                   IsSpellCheckEnabled="False"
+                   Text="{Binding BookRelease, Converter={StaticResource intToString}}"></Entry>
+            <Label Text="Jméno"
+                   Grid.Row="2"
+                   Padding="15"></Label>
+            <Label Text="Příjmení"
+                   Grid.Column="1"
+                   Grid.Row="2"
+                   Padding="15"></Label>
+            <Entry Placeholder="Křestní jméno..."
+                   Grid.Row="3"
+                   IsSpellCheckEnabled="False"
+                   Text="{Binding FirstName}"></Entry>
+            <Entry Placeholder="Příjmení..."
+                   Grid.Column="1"
+                   Grid.Row="3"
+                   IsSpellCheckEnabled="False"
+                   Text="{Binding LastName}"></Entry>
+            <Label Text="Počet licencí"
+                   Grid.Row="4"
+                   Padding="15"></Label>
+            <Label Text="Počet stran"
+                   Grid.Column="1"
+                   Grid.Row="4"
+                   Padding="15"></Label>
+            <Entry Placeholder="Počet licencí k dispozici..."
+                   Grid.Row="5"
+                   IsSpellCheckEnabled="False"
+                   Text="{Binding AvailableLicense, Converter={StaticResource intToString}}"></Entry>
+            <Entry Placeholder="Počet stran..."
+                   Grid.Column="1"
+                   Grid.Row="5"
+                   IsSpellCheckEnabled="False"
+                   Text="{Binding Pages, Converter={StaticResource intToString}}"></Entry>
+            <Entry Placeholder="Odkaz na obrázek..."
+                   Grid.ColumnSpan="2"
+                   Grid.Row="6"
+                   IsSpellCheckEnabled="False"
+                   Text="{Binding ImageUrl}"></Entry>
+            <Button Grid.ColumnSpan="2"
+                    Grid.Row="7"
+                    Text="Uložit knihu"
+                    Command="{Binding EditBookCommand}"></Button>
+        </Grid>
+        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                           Margin="0,15,0,0"></ActivityIndicator>
+    </VerticalStackLayout>
+</ContentPage>

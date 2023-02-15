@@ -1,7 +1,11 @@
-﻿using AK7PDMAUI.Models;
+﻿using AK7PDMAUI.Extensions;
+using AK7PDMAUI.Models;
 using AK7PDMAUI.Resources.Resx;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 
 namespace AK7PDMAUI.Managers
 {
@@ -27,6 +31,10 @@ namespace AK7PDMAUI.Managers
                 BookCollection = CurrentDatabase.GetCollection<Book>("Book");
                 UserBookCollection = CurrentDatabase.GetCollection<UserBook>("UserBook");
 
+                var indexKeysDefinition = Builders<Book>.IndexKeys.Text(x => x.Title);
+                var createIndexModel = new CreateIndexModel<Book>(indexKeysDefinition);
+                BookCollection.Indexes.CreateOne(createIndexModel);
+
                 //List<string> databases = MongoClient.ListDatabaseNames().ToList();
             }
             catch (Exception)
@@ -35,18 +43,26 @@ namespace AK7PDMAUI.Managers
             }
         }
 
-        public async Task<bool> CreateUserAsync(User user)
+        public async Task<bool> CheckIfUserExists(string login)
+        {
+            return await UserCollection.Find(x => x.Login == login).CountDocumentsAsync() != 0;
+        }
+
+        public async Task CreateUserAsync(User user)
         {
             try
             {
+                if (UserCollection.Find(x => x.Login == user.Login).CountDocuments() != 0)
+                {
+                    throw new Exception("Účet se zadaným uživatelským jménem již existuje!");
+                }
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                 await UserCollection.InsertOneAsync(user);
-                return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                throw new Exception("Účet se nepodařilo vytvořit.", e);
             }
-            return false;
         }
 
         public async Task<User> LoginUserAsync(string login, string password)
@@ -72,7 +88,7 @@ namespace AK7PDMAUI.Managers
             List<UserBook> userBooks = new List<UserBook>();
             try
             {
-                userBooks = await UserBookCollection.Find(x => x.UserId == user.Id.ToString()).ToListAsync();
+                userBooks = await UserBookCollection.Find(x => x.UserId == user.Id && x.IsActive).ToListAsync();
 
             }
             catch (Exception)
@@ -94,6 +110,20 @@ namespace AK7PDMAUI.Managers
             }
         }
 
+        public async Task ReturnUserBookAsync(UserBook userBook)
+        {
+            try
+            {
+                var filter = Builders<UserBook>.Filter.Eq("_id", userBook.Id);
+                var update = Builders<UserBook>.Update.Set("active", userBook.IsActive);
+                await UserBookCollection.UpdateOneAsync(filter, update);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task DeleteUserBookAsync(UserBook userBook)
         {
             try
@@ -106,12 +136,16 @@ namespace AK7PDMAUI.Managers
             }
         }
 
-        public async Task<List<Book>> GetBooksAsync()
+        public async Task<List<Book>> GetBooksAsync(int limit = 50)
         {
             List<Book> books = new List<Book>();
             try
             {
-                books = await BookCollection.Find(new BsonDocument()).ToListAsync();
+                books = await BookCollection
+                    .Find(new BsonDocument())
+                    .Limit(50)
+                    .SortByDescending(x => x.BorrowedCount)
+                    .ToListAsync();
             }
             catch (Exception)
             {
@@ -125,17 +159,63 @@ namespace AK7PDMAUI.Managers
             try
             {
                 List<Book> books = new();
-                //books = await BookCollection.Find
-                //    (x => userBooks.Find(y => x.Id.ToString() == y.BookId) != null).ToListAsync();
-                books = BookCollection.AsQueryable()
-                    .Where(x => userBooks.Any(y => x.Id.ToString() == y.BookId && y.IsActive)).ToList();
+                books = BookCollection
+                    .AsQueryable()
+                    .Where(x => userBooks.Any(y => x.Id == y.BookId && y.IsActive))
+                    .ToList();
                 return books;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
         }
+
+        public async Task<List<Book>> SearchBooks(string searchText)
+        {
+            try
+            {
+                List<Book> books = new();
+                searchText = searchText.ToLower();
+                //searchText = RemoveDiacritics(searchText);
+                //books = BookCollection
+                //    .AsQueryable()
+                //    .WhereText(searchText)
+                //    .Take(10)
+                //    .ToList();
+                books = BookCollection
+                     .AsQueryable()
+                     .Where(x => x.Title.ToLower().Contains(searchText))
+                     .ToList();
+                return books;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        //zdroj https://stackoverflow.com/questions/249087/how-do-i-remove-diacritics-accents-from-a-string-in-net
+        static string RemoveDiacritics(string text)
+        {
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder(capacity: normalizedString.Length);
+
+            for (int i = 0; i < normalizedString.Length; i++)
+            {
+                char c = normalizedString[i];
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder
+                .ToString()
+                .Normalize(NormalizationForm.FormC);
+        }
+
 
         public async Task CreateBookAsync(Book book)
         {
@@ -196,7 +276,7 @@ namespace AK7PDMAUI.Managers
                 var books = await BookCollection.FindAsync(filter);
                 return books.First();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }

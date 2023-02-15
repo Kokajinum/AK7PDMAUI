@@ -6,7 +6,7 @@ public partial class AppShell : Shell
 	{
 		InitializeComponent();
 		Routing.RegisterRoute("CreateBookPage", typeof(CreateBookPage));
-		
+		Routing.RegisterRoute("EditBookPage", typeof(EditBookPage));	
 	}
 
 	//public void EnableAdminShellContent()

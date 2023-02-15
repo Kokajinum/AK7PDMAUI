@@ -15,10 +15,10 @@ namespace AK7PDMAUI.Models
         public ObjectId Id { get; set; }
 
         [BsonElement("book_id")]
-        public string BookId { get; set; }
+        public ObjectId BookId { get; set; }
 
         [BsonElement("user_id")]
-        public string UserId { get; set; }
+        public ObjectId UserId { get; set; }
 
         [BsonElement("borrowing_date")]
         public DateTime BorrowingDate { get; set; }

@@ -3,49 +3,87 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AK7PDMAUI.LoginPage"
              Title="Přihlášení do aplikace">
-    <VerticalStackLayout WidthRequest="300"
-                         HeightRequest="300"
-                         Spacing="30">
-        <VerticalStackLayout Spacing="20"
-                             HorizontalOptions="CenterAndExpand"
-                             WidthRequest="200">
-            <Entry x:Name="EmailLabel"
-                   Placeholder="Email..."
-                   Text="{Binding Username}"></Entry>
-            <Entry x:Name="PasswordLabel1"
-                   Placeholder="Heslo..."
-                   IsPassword="true"
-                   Text="{Binding Password1}"></Entry>
-            <Entry x:Name="PasswordLabel2"
-                   Placeholder="Heslo znovu..."
-                   IsPassword="true"
-                   IsVisible="{Binding RegistrationControlsVisible}"
-                   Text="{Binding Password2}"></Entry>
+    <Grid>
+        <VerticalStackLayout WidthRequest="300"
+                             HeightRequest="300"
+                             Spacing="30"
+                             IsVisible="{Binding LoginInfoVisible}">
+            <VerticalStackLayout Spacing="20"
+                                 HorizontalOptions="CenterAndExpand"
+                                 WidthRequest="200">
+                <Entry x:Name="EmailLabel"
+                       Placeholder="Email..."
+                       Text="{Binding Username}"></Entry>
+                <Entry x:Name="PasswordLabel1"
+                       Placeholder="Heslo..."
+                       IsPassword="true"
+                       Text="{Binding Password1}"></Entry>
+                <Entry x:Name="PasswordLabel2"
+                       Placeholder="Heslo znovu..."
+                       IsPassword="true"
+                       IsVisible="{Binding RegistrationControlsVisible}"
+                       Text="{Binding Password2}"></Entry>
+            </VerticalStackLayout>
+            <Label x:Name="HintLabel"
+                   Text="{Binding Hint}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   TextDecorations="Underline"
+                   TextColor="LightBlue">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="NewAccountLabel_Tapped"
+                                          Command="{Binding ChangeHintLabelCommand}"></TapGestureRecognizer>
+                </Label.GestureRecognizers>
+            </Label>
+            <Button x:Name="LoginButton"
+                    Text="Přihlásit"
+                    WidthRequest="200"
+                    Clicked="LoginButton_Clicked"
+                    Command="{Binding LoginCommand}"
+                    IsVisible="{Binding LoginControlsVisible}"></Button>
+            <Button x:Name="RegisterButton"
+                    Text="Registrovat"
+                    WidthRequest="200"
+                    Clicked="RegisterButton_Clicked"
+                    Command="{Binding RegisterCommand}"
+                    IsVisible="{Binding RegistrationControlsVisible}"></Button>
+            <ActivityIndicator x:Name="ActivityIndicator"
+                               IsRunning="{Binding IsBusy}"></ActivityIndicator>
         </VerticalStackLayout>
-        <Label x:Name="HintLabel"
-               Text="{Binding Hint}"
-               VerticalOptions="Center"
-               HorizontalOptions="Center"
-               TextDecorations="Underline"
-               TextColor="LightBlue">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer Tapped="NewAccountLabel_Tapped"
-                                      Command="{Binding ChangeHintLabelCommand}"></TapGestureRecognizer>
-            </Label.GestureRecognizers>
-        </Label>
-        <Button x:Name="LoginButton"
-                Text="Přihlásit"
-                WidthRequest="200"
-                Clicked="LoginButton_Clicked"
-                Command="{Binding LoginCommand}"
-                IsVisible="{Binding LoginControlsVisible}"></Button>
-        <Button x:Name="RegisterButton"
-                Text="Registrovat"
-                WidthRequest="200"
-                Clicked="RegisterButton_Clicked"
-                Command="{Binding RegisterCommand}"
-                IsVisible="{Binding RegistrationControlsVisible}"></Button>
-        <ActivityIndicator x:Name="ActivityIndicator"
-                           IsRunning="{Binding IsBusy}"></ActivityIndicator>
-    </VerticalStackLayout>
+        <VerticalStackLayout IsVisible="{Binding RegistrationInfoVisible}">
+            <Grid ColumnDefinitions="*, *"
+                  RowDefinitions="*,*,*"
+                  WidthRequest="400"
+                  HeightRequest="200"
+                  VerticalOptions="Start"
+                  Margin="0,30,0,0">
+                <Entry Placeholder="Křestní jméno..."
+                       Text="{Binding FirstName}"
+                       IsSpellCheckEnabled="False"></Entry>
+                <Entry Placeholder="Příjmení..."
+                       Grid.Column="1"
+                       Keyboard="Numeric"
+                       IsSpellCheckEnabled="False"
+                       Text="{Binding LastName}"></Entry>
+                <Entry Placeholder="Název ulice..."
+                       Grid.Row="1"
+                       IsSpellCheckEnabled="False"
+                       Text="{Binding Street}"></Entry>
+                <Entry Placeholder="Název města..."
+                       Grid.Column="1"
+                       Grid.Row="1"
+                       IsSpellCheckEnabled="False"
+                       Text="{Binding City}"></Entry>
+                <Entry Placeholder="Poštovní směrovací číslo..."
+                       Grid.Row="2"
+                       IsSpellCheckEnabled="False"
+                       Text="{Binding ZipCode}"></Entry>
+            </Grid>
+            <Button Text="Zažádat o vytvoření účtu"
+                    Margin="150,80,150,80"
+                    Command="{Binding RequestRegistrationCommand}"></Button>
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               Margin="0,15,0,0"></ActivityIndicator>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>
